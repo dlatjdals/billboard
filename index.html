@@ -6,8 +6,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <style>
+        header {
+            background-color: #000000;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+        header img {
+            height: 100px;
+        }
+        section {
+            padding: 100px 10px 0;
+        }
+        .title {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            font-style: italic;
+            margin-top: 30px;
+        }
+        .list {
+            margin-top: 30px;
+        }
+        .list ul {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        .list ul li {
+            width: 48%;
+            margin-bottom: 20px;
+        }
+        .list ul li:nth-child(2n - 1) {
+            margin-right: 4%;
+        }
+        .list li {
+            display: inline-block;
+        }
+        .list li img{
+            display: block;
+            width: 100%;
+        }
+        .img_box {
+            position: relative;
+        }
+        .img_box .number {
+            background-color: #000000;
+            font-size: 15px;
+            font-weight: bold;
+            font-style: italic;
+            width: 40px;
+            height: 40px;
+            color: #ffffff;
+            text-align: center;
+            display: flex;
+            position: absolute;
+            top: -8px;
+            left: -5px;
+            border-radius: 3px;
+        }
+        .img_box .number.top_number {
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+        }
+        .img_box .number.second_number {
+            width: 45px;
+            height: 45px;
+            font-size: 25px;
+        }
+        .img_box .number span {
+            margin: auto;
+        }
+        .music_name {
+            margin-top: 5px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #000000;
+            line-height: 20px;
+        }
+    </style>
 </head>
 <body>
-    
+    <header>
+        <img src="./images/header.png" alt="빌보드 헤더">
+    </header>
+    <section>
+        <div class="title" id="title"></div>
+        <div class="list">
+            <ul id="rankList">
+            </ul>
+        </div>
+    </section>
+    <script>
+        $(function () {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+            ];
+            $.get('https://raw.githubusercontent.com/KoreanThinker/billboard-json/main/billboard-hot-100/recent.json', function (res, status) {
+                if (status === 'success') {
+                    const dataList = JSON.parse(res);
+                    const billboardList = [];
+                    for (let i = 0; i < dataList.data.length; i ++) {
+                        const billboardData = `
+                            <li>
+                                <div class="img_box">
+                                    <div class="number ${i == 0 ? 'top_number': ''} ${i == 1 ? 'second_number': ''}">
+                                        <span>${dataList.data[i].rank}</span>
+                                    </div>
+                                    <img src="${dataList.data[i].image}" alt="${dataList.data[i].name}">
+                                    <div class="music_name">${dataList.data[i].artist} | ${dataList.data[i].name}</div>
+                                </div>
+                            </li>
+                        `;
+                        billboardList.push(billboardData);
+                    }
+                    $('#rankList').append(billboardList);
+                    const billboardDate = new Date(dataList.date);
+                    const year = billboardDate.getFullYear();
+                    const month = monthNames[billboardDate.getMonth()];
+                    const day = billboardDate.getDay();
+                    const billboardTitle = `WEEK OF ${month} ${day}, ${year}`
+                    $('#title').text(billboardTitle);
+                }
+                
+            })
+        })
+    </script>
 </body>
 </html>
